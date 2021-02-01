@@ -33,20 +33,7 @@ The design is simple.
 [Deployment Logs](https://coolify.coollabs.io/assets/logs.png)
 
 # Getting Started
-### Requirements before installation
-- [Docker](https://docs.docker.com/engine/install/) version 20+  
-- Docker in [swarm mode enabled](https://docs.docker.com/engine/reference/commandline/swarm_init/) (should be set manually before installation)
-- A [MongoDB](https://docs.mongodb.com/manual/installation/) instance. (We have a [simple installation](https://github.com/coollabsio/infrastructure/tree/main/mongo) if you need one)
-- A configured DNS entry for the webhook service (see `.env.template`)
-- [Github OAuth App](https://docs.github.com/en/developers/apps/creating-an-oauth-app)
-  - Authorization callback URL set to `https://<your domain>/api/v1/login/github/oauth`
-- [Github App](https://docs.github.com/en/developers/apps/creating-a-github-app)
-  - Callback URL set to `http://<your domain>/api/v1/login/github/app`
-
-### Installation
-- Clone this repository: `git clone git@github.com:coollabsio/coolify.git`
-- Set `.env` (see `.env.template`)
-- Installation: `bash install.sh all`
+New installation process soon!
 
 ## Updating process
 ### Update everything (proxy+coolify)
