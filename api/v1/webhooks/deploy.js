@@ -41,6 +41,10 @@ module.exports = async function (fastify) {
     },
   };
   fastify.post("/", { schema: postSchema }, async (request, reply) => {
+    if (request.headers["x-hub-signature-256"] !== fastify.config.GITHUP_APP_WEBHOOK_SECRET) {
+      reply.code(500).send({ success: false, error: "Invalid request" });
+      return
+    }
     if (request.headers["x-github-event"] !== "push") {
       reply.code(500).send({ success: false, error: "Not a push event." });
       return;

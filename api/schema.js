@@ -8,8 +8,9 @@ const schema = {
         "GITHUB_OAUTH_SECRET",
         "GITHUB_APP_CLIENT_SECRET",
         "GITHUB_APP_PRIVATE_KEY",
+        "GITHUP_APP_WEBHOOK_SECRET",
         "JWT_SIGN_KEY",
-        "SECRETS_ENCRYPTION_KEY"
+        "SECRETS_ENCRYPTION_KEY",
     ],
     properties: {
         DOMAIN: {
@@ -31,6 +32,9 @@ const schema = {
             type: "string",
         },
         GITHUB_APP_PRIVATE_KEY: {
+            type: "string",
+        },
+        GITHUP_APP_WEBHOOK_SECRET: {
             type: "string",
         },
         JWT_SIGN_KEY: {
