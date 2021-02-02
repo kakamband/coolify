@@ -28,9 +28,7 @@ if (program.check) {
         console.error(`Please run as root! Current user: ${user}`)
         process.exit(1)
     }
-    shell.exec('GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git pull', { silent: !program.debug })
     shell.exec(`docker network create ${process.env.DOCKER_NETWORK} --driver overlay`, { silent: !program.debug })
-    shell.exec(`docker volume create mongodb-data`, { silent: !program.debug })
     shell.exec('docker build -t coolify -f install/Dockerfile .')
     if (program.type === 'all') {
         shell.exec('docker stack rm coolify', { silent: !program.debug })

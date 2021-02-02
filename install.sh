@@ -1,4 +1,5 @@
 #!/bin/bash
+GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git pull
 echo "#### Building base image."
 docker build -t coolify-base -f install/Dockerfile-base .
 if [ $? -ne 0 ]; then
