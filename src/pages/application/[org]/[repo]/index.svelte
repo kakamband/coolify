@@ -174,7 +174,7 @@
         return false;
       }
       const { repositories } = await $fetch(
-        `https://api.github.com/user/installations/${installations[0].id}/repositories`
+        `https://api.github.com/user/installations/${installations[0].id}/repositories?per_page=10000`
       );
       installation = installations[0];
       repos = repositories;
