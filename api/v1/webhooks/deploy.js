@@ -117,9 +117,12 @@ module.exports = async function (fastify) {
       // If domain changed, delete the old deployement
       await (await dockerEngine.listServices()).filter(r => r.Spec.Labels.managedBy === 'coolify' && r.Spec.Labels.type === 'application').map(async s => {
         const running = s.Spec.Labels
-        if (running.domain !== config.publish.domain) {
-          await execShellAsync(`docker stack rm ${s.Spec.Labels['com.docker.stack.namespace']}`)
+        if (running.repoId === repoId && running.branch === branch) {
+          if (running.domain !== config.publish.domain) {
+            await execShellAsync(`docker stack rm ${s.Spec.Labels['com.docker.stack.namespace']}`)
+          }
         }
+
       })
       
       await cloneRepository(
