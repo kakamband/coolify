@@ -5,7 +5,7 @@
   import Login from "../../../../components/Application/Login.svelte";
   import { fade } from "svelte/transition";
   import Loading from "../../../../components/Loading.svelte";
-  import { toast } from '@zerodevx/svelte-toast'
+  import { toast } from "@zerodevx/svelte-toast";
 
   $: org = $params.org;
   $: repo = $params.repo;
@@ -78,7 +78,7 @@
           branch: config.branch,
         },
       });
-      toast.push(`Successfully deleted the ${config.branch} branch.`)
+      toast.push(`Successfully deleted the ${config.branch} branch.`);
       $goto("/dashboard");
     } catch (error) {
       console.log(error);
@@ -247,9 +247,15 @@
       const repo = repos.find((r) => r.id === repoId);
       config.fullName = `${repo.owner.login}/${repo.name}`;
       config.installationId = installation.id;
-      config = await $fetch(`/api/v1/config`, { body: { ...config, branch } });
-      initialConfig = JSON.parse(JSON.stringify(config));
-      toast.push(`Configuration saved.`)
+      try {
+        config = await $fetch(`/api/v1/config`, {
+          body: { ...config, branch },
+        });
+        initialConfig = JSON.parse(JSON.stringify(config));
+        toast.push(`Configuration saved.`);
+      } catch (error) {
+        toast.push(error.error || "Something is NOT okay. Are you okay?");
+      }
     } else {
       isDomainMissing = true;
       activateTab("general");
@@ -284,11 +290,12 @@
     const response = await $fetch(`/api/v1/webhooks/deploy`, {
       body,
       headers: {
+        "Manual": true,
         "X-GitHub-Hook-Installation-Target-ID": installation.app_id,
         "X-GitHub-Event": "push",
       },
     });
-    toast.push(response.message)
+    toast.push(response.message);
   }
 </script>
 

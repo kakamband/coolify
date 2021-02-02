@@ -8,8 +8,10 @@ const buildContainer = require("../../libs/buildContainer");
 const deploy = require("../../libs/deploy");
 const cuid = require("cuid");
 const Log = require('../../models/Log')
-const Deployment= require('../../models/Deployment')
+const Deployment = require('../../models/Deployment')
 const dayjs = require('dayjs')
+const crypto = require('crypto');
+const { verifyUserId } = require("../../libs/common");
 
 module.exports = async function (fastify) {
   // TODO: Add this to fastify plugin
@@ -41,9 +43,19 @@ module.exports = async function (fastify) {
     },
   };
   fastify.post("/", { schema: postSchema }, async (request, reply) => {
-    if (request.headers["x-hub-signature-256"] !== fastify.config.GITHUP_APP_WEBHOOK_SECRET) {
-      reply.code(500).send({ success: false, error: "Invalid request" });
-      return
+    if (request.headers.manual) {
+      if (!await verifyUserId(request.headers.authorization)) {
+        reply.code(500).send({ success: false, error: "Invalid request" });
+        return
+      }
+    } else {
+      const hmac = crypto.createHmac('sha256', fastify.config.GITHUP_APP_WEBHOOK_SECRET)
+      const digest = Buffer.from('sha256=' + hmac.update(JSON.stringify(request.body)).digest('hex'), 'utf8')
+      const checksum = Buffer.from(request.headers["x-hub-signature-256"], 'utf8')
+      if (checksum.length !== digest.length || !crypto.timingSafeEqual(digest, checksum)) {
+        reply.code(500).send({ success: false, error: "Invalid request" });
+        return
+      }
     }
     if (request.headers["x-github-event"] !== "push") {
       reply.code(500).send({ success: false, error: "Not a push event." });
@@ -95,7 +107,7 @@ module.exports = async function (fastify) {
       deployId,
       events: [`[INFO] ${dayjs().format('YYYY-MM-DD HH:mm:ss.SSS')} Queued.`]
     }).save()
-  
+
     try {
       await getSecrets(config);
       await getConfig(config);

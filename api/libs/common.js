@@ -1,9 +1,20 @@
 const crypto = require("crypto");
 const shell = require("shelljs");
 const jsonwebtoken = require("jsonwebtoken");
+const User = require('../models/User')
 const algorithm = "aes-256-cbc";
 const key = process.env.SECRETS_ENCRYPTION_KEY;
 
+async function verifyUserId(authorization) {
+  const token = authorization.split(" ")[1];
+  const verify = jsonwebtoken.verify(token, process.env.JWT_SIGN_KEY);
+  const found = await User.findOne({ uid: verify.jti });
+  if (found) {
+    return true
+  } else {
+    return false
+  }
+}
 function execShellAsync(cmd, opts = {}) {
   return new Promise(function (resolve, reject) {
     shell.config.silent = true;
@@ -65,4 +76,5 @@ module.exports = {
   checkImageAvailable,
   encryptData,
   decryptData,
+  verifyUserId
 };
