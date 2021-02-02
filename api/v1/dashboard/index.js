@@ -1,11 +1,11 @@
 const Config = require("../../models/Config");
 const Deployment = require("../../models/Deployment");
 const Dockerode = require("dockerode");
+const dockerEngine = new Dockerode({
+  socketPath: process.env.DOCKER_ENGINE,
+});
 module.exports = async function (fastify) {
     // TODO: Add this to fastify plugin
-  const dockerEngine = new Dockerode({
-    socketPath: fastify.config.DOCKER_ENGINE,
-  });
   fastify.get("/", async (request, reply) => {
     let onlyConfigured = await Config.find().select('-__v -_id')
     const latestDeployments = await Deployment.aggregate([
