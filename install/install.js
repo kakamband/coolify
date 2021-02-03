@@ -31,7 +31,7 @@ if (program.check) {
     shell.exec(`docker network create ${process.env.DOCKER_NETWORK} --driver overlay`, { silent: !program.debug })
     shell.exec('docker build -t coolify -f install/Dockerfile .')
     if (program.type === 'all') {
-        shell.exec('docker stack rm coolify', { silent: !program.debug })
+        shell.exec('docker stack rm coollabs-coolify', { silent: !program.debug })
     } else if (program.type === 'coolify') {
         shell.exec('docker service rm coollabs-coolify_coolify')
     } else if (program.type === 'proxy') {
