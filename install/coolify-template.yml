@@ -17,7 +17,7 @@ services:
       - --api.insecure=false
       - --api.dashboard=false
       - --api.debug=false
-      - --log.level=DEBUG
+      - --log.level=ERROR
       - --providers.docker=true
       - --providers.docker.swarmMode=true
       - --providers.docker.exposedbydefault=false
