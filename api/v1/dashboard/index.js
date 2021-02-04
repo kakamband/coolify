@@ -10,14 +10,17 @@ module.exports = async function (fastify) {
     let onlyConfigured = await Config.find().select('-__v -_id')
     const latestDeployments = await Deployment.aggregate([
       {
-        $sort:{ updatedAt: -1 }
+        $sort:{ createdAt: -1 }
       },
       {
         $group:
         {
-          _id: '$repoId',
-          createdAt: { $last: '$updatedAt' },
-          progress : { $first: '$progress' },
+          _id: {
+            repoId:'$repoId',
+            branch: '$branch',
+          },
+          createdAt: { $last: '$createdAt' },
+          progress : { $first: '$progress' }
         }
       }
     ])
@@ -25,16 +28,16 @@ module.exports = async function (fastify) {
 
     let deployedApplications = services.filter(r => r.Spec.Labels.managedBy === 'coolify' && r.Spec.Labels.type === 'application')
     let deployedDatabases = services.filter(r => r.Spec.Labels.managedBy === 'coolify' && r.Spec.Labels.type === 'database')
-    deployedApplications = deployedApplications.map(r => {
 
+    deployedApplications = deployedApplications.map(r => {
       onlyConfigured = onlyConfigured.filter(c => { 
         if (c.publish.domain !== r.Spec.Labels.domain) {
-          let status = latestDeployments.find(l => r.Spec.Labels.repoId == l._id)
+          let status = latestDeployments.find(l => r.Spec.Labels.repoId == l._id.repoId && r.Spec.Labels.branch == l._id.branch)
           if (status && status.progress) c.progress = status.progress
           return c
         }
       })
-      let status = latestDeployments.find(l => r.Spec.Labels.repoId == l._id)
+      let status = latestDeployments.find(l => r.Spec.Labels.repoId == l._id.repoId && r.Spec.Labels.branch == l._id.branch)
       if (status && status.progress) r.progress = status.progress
       return r
     })
