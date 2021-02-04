@@ -14,5 +14,7 @@ COPY ./package*.json .
 RUN yarn install
 
 FROM modules
+RUN curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm && \
+    pnpm set verify-store-integrity false
 WORKDIR /usr/src/app
 COPY . .
