@@ -47,7 +47,7 @@
     <main>
       {#if $route.path !== "/index"}
         <nav
-          class="py-4 px-4 grid grid-cols-3 text-white border-b-2 font-bold tracking-tight bg-coolgray-200 border-black shadow"
+          class="py-4 px-4 grid grid-cols-3 text-white font-bold tracking-tight"
         >
           <div class="lg:col-span-2">
             <div class="font-bold text-xl">Coolify</div>

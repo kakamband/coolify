@@ -72,8 +72,10 @@
                     !application.progress}
             >
                 <div class="font-medium text-center text-xl">
+                <a class="hover:underline"  href={"https://" + application.Spec.Labels.domain}>
                     {application.Spec.Labels.domain}
-                </div>
+                </a>
+            </div>
 
                 <div class="text-xs text-center">
                     {application.Spec.Labels.org}/{application.Spec.Labels

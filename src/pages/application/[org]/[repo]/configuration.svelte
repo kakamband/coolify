@@ -324,11 +324,11 @@
       <div class="text-4xl font-bold tracking-tight pt-6 text-center">
         Configuration
       </div>
-      <div
+      <!-- <div
         class="text-xs font-bold tracking-tight pb-6 text-center text-gray-500"
       >
         {org}/{repo}
-      </div>
+      </div> -->
       {#if repos && repos.length > 0 && !loading.github}
         <div
           class="text-center space-y-2 max-w-2xl md:mx-auto mx-6 pt-6 pb-4"

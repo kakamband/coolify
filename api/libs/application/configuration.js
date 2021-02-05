@@ -1,4 +1,4 @@
-const { execShellAsync } = require("../common");
+const { execShellAsync, decryptData  } = require("../common");
 const Config = require("../../models/Config");
 const Secret = require("../../models/Secret");
 const merge = require("deepmerge");
