@@ -74,7 +74,7 @@ module.exports = async function (config) {
     };
     await fs.writeFile(`${config.general.workdir}/stack.yml`, yaml.dump(stack))
     await execShellAsync(
-      `cat ${config.general.workdir}/stack.yml |docker stack deploy --prune -c - ${containerName}`
+      `cat ${config.general.workdir}/stack.yml |docker stack deploy -c - ${containerName}`
     );
     await saveAppLog("Published!", config);
   } catch (error) {

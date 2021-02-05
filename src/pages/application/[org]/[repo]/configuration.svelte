@@ -496,7 +496,7 @@
                   on:focus={() => (isDomainMissing = false)}
                   id="Domain"
                   bind:value={config.publish.domain}
-                  placeholder="eg: coollabs.io (without www)"
+                  placeholder="eg: coollabs.io (without www and http/https)"
                 />
                 <label for="Path">Path Prefix</label>
                 <input
