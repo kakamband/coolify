@@ -21,7 +21,7 @@
     }
 </script>
 
-<div class="flex items-center py-6 px-5 justify-center">
+<div class="flex items-center pb-6 px-5 justify-center">
     <div class="text-4xl font-bold tracking-tight">Settings</div>
 </div>
 <div class="text-center space-y-2 max-w-2xl md:mx-auto mx-6 pt-6 pb-4">

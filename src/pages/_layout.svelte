@@ -50,7 +50,7 @@
           class="py-4 px-4 grid grid-cols-3 text-white font-bold tracking-tight"
         >
           <div class="lg:col-span-2">
-            <div class="font-bold text-xl">Coolify</div>
+            <a href="https://coollabs.io"><img class="w-10" src='/favicon.png' alt="coolLabs logo"></a>
           </div>
           <div class="col-span-2 lg:col-span-1 space-x-4 text-right text-white">
             {#each routes as route}

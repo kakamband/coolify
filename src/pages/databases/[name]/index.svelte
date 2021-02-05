@@ -8,7 +8,7 @@
 </script>
 
 {#if name === "new"}
-        <div class="flex items-center py-6 px-5 justify-center">
+        <div class="flex items-center pb-6 px-5 justify-center">
                 <div class="text-4xl font-bold tracking-tight">
                         New Database
                 </div>

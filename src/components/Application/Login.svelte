@@ -27,7 +27,7 @@
 </script>
 
 <div class="text-center">
-  <div class="text-xl font-bold tracking-tight py-6 text-center">
+  <div class="text-xl font-bold tracking-tight pb-6 text-center">
     Choose your Git provider
   </div>
   <button on:click={login}>

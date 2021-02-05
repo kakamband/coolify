@@ -22,7 +22,7 @@
     }
 </script>
 
-<div class="flex items-center py-6 px-5 justify-center">
+<div class="flex items-center pb-6 px-5 justify-center">
     <div class="text-4xl font-bold tracking-tight">Applications</div>
     <a
         class="mx-2 flex items-center justify-center h-8 w-8 bg-blue-600 border border-black rounded-md text-white hover:bg-blue-500"

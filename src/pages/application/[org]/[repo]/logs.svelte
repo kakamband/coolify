@@ -12,9 +12,11 @@
 
     let selectedBranch = $savedBranch || null;
     let initialSelectedBranch = "Select a branch";
-    
+
     async function loadDeployments() {
-        deployments = await $fetch(`/api/v1/deployments?org=${org}&repo=${repo}`);
+        deployments = await $fetch(
+            `/api/v1/deployments?org=${org}&repo=${repo}`
+        );
         branches = [...new Set(deployments.map((log) => log.branch))];
     }
     onDestroy(() => {
@@ -25,7 +27,9 @@
 <div>
     {#await loadDeployments() then notUsed}
         <div class="flex justify-center items-end">
-            <div class="text-4xl font-bold tracking-tight pt-6 px-2 text-center">
+            <div
+                class="text-4xl font-bold tracking-tight pt-6 px-2 text-center"
+            >
                 Logs
             </div>
             <button
@@ -53,25 +57,29 @@
             {org}/{repo}
         </div>
         {#if branches.length > 0}
-        <div class="text-center space-y-2 max-w-2xl md:mx-auto mx-6 pb-4">
-            <!-- svelte-ignore a11y-no-onchange -->
-            <select
-                class="mb-6"
-                bind:value={selectedBranch}
-                on:change={() => (selectedBranch = selectedBranch)}
-            >
-                <option selected disabled>{initialSelectedBranch}</option>
-                {#each branches as branch}
-                    <option value={branch}>{branch}</option>
-                {/each}
-            </select>
+            <div class="text-center space-y-2 px-0 md:px-10 xl:px-0 max-w-7xl md:mx-auto mx-6 pb-4">
+                <!-- svelte-ignore a11y-no-onchange -->
+                <select
+                    class="mb-6"
+                    bind:value={selectedBranch}
+                    on:change={() => (selectedBranch = selectedBranch)}
+                >
+                    <option selected disabled>{initialSelectedBranch}</option>
+                    {#each branches as branch}
+                        <option value={branch}>{branch}</option>
+                    {/each}
+                </select>
 
-            {#each deployments.filter((l) => l.branch === selectedBranch) as deployment}
-                <Log deployment={deployment} />
-            {/each}
-        </div>
+                {#each deployments.filter((l) => l.branch === selectedBranch) as deployment}
+                    <Log {deployment} />
+                {/each}
+            </div>
         {:else}
-        <div class="text-center space-y-2 max-w-2xl md:mx-auto mx-6 pb-4 font-bold">No logs found</div>
+            <div
+                class="text-center space-y-2 max-w-2xl md:mx-auto mx-6 pb-4 font-bold"
+            >
+                No logs found
+            </div>
         {/if}
     {/await}
 </div>
