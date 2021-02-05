@@ -49,9 +49,10 @@
         <nav
           class="py-4 px-4 grid grid-cols-3 text-white font-bold tracking-tight"
         >
-          <div class="lg:col-span-2">
-            <a href="https://coollabs.io"><img class="w-10" src='/favicon.png' alt="coolLabs logo"></a>
-          </div>
+        <div class="absolute">
+          <a href="https://coollabs.io" target="_blank"><img class="w-10 h-10" src='/favicon.png' alt="coolLabs logo"></a>
+        </div>
+        <div class="lg:col-span-2"/>
           <div class="col-span-2 lg:col-span-1 space-x-4 text-right text-white">
             {#each routes as route}
               <a
@@ -62,7 +63,7 @@
               >
             {/each}
             <button
-              class="border-b-4 border-transparent  hover:border-blue-500 tracking-tight font-bold"
+              class="border-b-4 border-transparent hover:border-blue-500 tracking-tight font-bold"
               on:click={logout}>Logout</button
             >
           </div>

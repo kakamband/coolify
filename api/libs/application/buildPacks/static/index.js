@@ -7,9 +7,9 @@ module.exports = async function (config) {
   if (!config.build.installCmd) config.build.installCmd = "yarn install";
 
   // const onlyConfigurationChanged = await checkImageAvailable(
-  //   `${config.build.container.name}:${config.build.container.tag}`,
-  //   engine
+  //   `${config.build.container.name}:${config.build.container.tag}`
   // );
+  // console.log(onlyConfigurationChanged)
   if (config.build.buildCmd) await buildImage(config)
 
   dockerFile = `# production stage

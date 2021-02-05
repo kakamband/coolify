@@ -321,7 +321,7 @@
     {#await loadGithubRepositories()}
       <Loading message={"Loading Github..."} />
     {:then}
-      <div class="text-4xl font-bold tracking-tight pt-6 text-center">
+      <div class="text-4xl font-bold tracking-tight pb-6 text-center">
         Configuration
       </div>
       <!-- <div

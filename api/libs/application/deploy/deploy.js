@@ -22,12 +22,12 @@ module.exports = async function (config) {
           deploy: {
             replicas: 1,
             update_config: {
-              parallelism: 0,
+              parallelism: 1,
               delay: "10s",
               order: "start-first",
             },
             rollback_config: {
-              parallelism: 0,
+              parallelism: 1,
               delay: "10s",
               order: "start-first",
             },
@@ -74,7 +74,7 @@ module.exports = async function (config) {
     };
     await fs.writeFile(`${config.general.workdir}/stack.yml`, yaml.dump(stack))
     await execShellAsync(
-      `cat ${config.general.workdir}/stack.yml |docker stack deploy -c - ${containerName}`
+      `cat ${config.general.workdir}/stack.yml |docker stack deploy --prune -c - ${containerName}`
     );
     await saveAppLog("Published!", config);
   } catch (error) {

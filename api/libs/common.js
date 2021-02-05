@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const shell = require("shelljs");
 const jsonwebtoken = require("jsonwebtoken");
+const { docker } = require('./docker')
 const User = require('../models/User')
 const algorithm = "aes-256-cbc";
 const key = process.env.SECRETS_ENCRYPTION_KEY;
@@ -28,10 +29,10 @@ function cleanupTmp(dir) {
   shell.rm("-fr", dir);
 }
 
-async function checkImageAvailable(name, engine) {
+async function checkImageAvailable(name) {
   let cacheAvailable = false;
   try {
-    await engine.getImage(name).get();
+    await docker.engine.getImage(name).get();
     cacheAvailable = true;
   } catch (e) {
     // Cache image not found
