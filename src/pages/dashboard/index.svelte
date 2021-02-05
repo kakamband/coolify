@@ -10,5 +10,5 @@
 
 {#await loadDashboard() then notUsed}
   <Applications on:loadDashboard={loadDashboard} applications={deployments.applications} />
-  <Databases on:loadDashboard={loadDashboard} databases={deployments.databases}/>
+  <!-- <Databases on:loadDashboard={loadDashboard} databases={deployments.databases}/> -->
 {/await}

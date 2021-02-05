@@ -7,6 +7,7 @@ const configSchema = mongoose.Schema(
     fullName: { type: String, required: true },
     branch: { type: String, required: true },
     buildPack: { type: String, required: true },
+    previewDeploy: { type: Boolean, required: true, default: false },
     build: {
       baseDir: { type: String, default: null },
       installCmd: { type: String, default: null },
@@ -21,5 +22,18 @@ const configSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+// const configModel = mongoose.model("config", configSchema);
 
-module.exports = mongoose.model("config", configSchema);
+// async function updateSchema() {
+//   const update = await configModel.updateMany(
+//     { previewDeploy: { $exists: false } },
+//     { $set: { previewDeploy: false } },
+//     { timestamps: false }
+//   )
+//   console.log(`configSchema updated for ${update.nModified} documents.`)
+// }
+
+// updateSchema()
+
+module.exports = mongoose.model("config", configSchema)
+

@@ -1,21 +1,11 @@
 const Dockerode = require("dockerode");
-const getSecrets = require("../../libs/getSecret");
-const getConfig = require("../../libs/getConfig");
-const cloneRepository = require("../../libs/cloneRepository");
-const generateConfig = require("../../libs/generateConfig");
-const copyFiles = require("../../libs/copyFiles");
-const buildContainer = require("../../libs/buildContainer");
-const deploy = require("../../libs/deploy");
 const cuid = require("cuid");
-const Log = require('../../models/Log')
-const Deployment = require('../../models/Deployment')
-const Config = require('../../models/Config')
-const dayjs = require('dayjs')
 const crypto = require('crypto');
-const { verifyUserId, execShellAsync } = require("../../libs/common");
-const dockerEngine = new Dockerode({
-  socketPath: process.env.DOCKER_ENGINE,
-});
+const { verifyUserId} = require("../../libs/common");
+const ApplicationLog = require('../../models/ApplicationLog')
+const { QnB } = require("../../libs/application");
+
+
 module.exports = async function (fastify) {
   // TODO: Add this to fastify plugin
   const postSchema = {
@@ -43,7 +33,6 @@ module.exports = async function (fastify) {
     },
   };
   fastify.post("/", { schema: postSchema }, async (request, reply) => {
-
     if (request.headers.manual) {
       if (!await verifyUserId(request.headers.authorization)) {
         reply.code(500).send({ success: false, error: "Invalid request" });
@@ -62,8 +51,7 @@ module.exports = async function (fastify) {
       reply.code(500).send({ success: false, error: "Not a push event." });
       return;
     }
-    const appId = request.headers["x-github-hook-installation-target-id"];
-    const random = cuid();
+
     const ref = request.body.ref.split("/")
     let branch = null
     if (ref[1] === "heads") {
@@ -71,7 +59,11 @@ module.exports = async function (fastify) {
     } else {
       return
     }
+  
+    const random = cuid();
+
     const config = {
+      previewDeploy: false,
       repository: {
         installationId: request.body.installation.id,
         id: request.body.repository.id,
@@ -81,62 +73,27 @@ module.exports = async function (fastify) {
       general: {
         random,
         workdir: `/tmp/${random}`,
+        githubAppId: request.headers["x-github-hook-installation-target-id"]
       },
       build: {
+        publishDir: "",
         container: {
           name: "",
           tag: "",
         },
       },
       publish: {
+        previewDomain: null,
         secrets: [],
       },
     };
-    const repoId = config.repository.id
-    const deployId = config.general.random
-    const alreadyQueued = await Log.find({ repoId, branch, progress: { $eq: 'building' } })
+    const repoId = config.repository.id.toString()
+    const alreadyQueued = await ApplicationLog.find({ repoId, branch, progress: { $eq: 'building' } })
     if (alreadyQueued.length > 0) {
-      reply.code(200).send({ message: "Already queued." });
+      reply.code(200).send({ message: "Already in the queue." });
       return
     }
-
-    reply.code(201).send({ message: "Added to the queue." });
-    await new Deployment({
-      repoId, branch, deployId
-    }).save()
-
-    await new Log({
-      deployId,
-      events: [`[INFO] ${dayjs().format('YYYY-MM-DD HH:mm:ss.SSS')} Queued.`]
-    }).save()
-
-    try {
-      await getSecrets(config);
-      await getConfig(config);
-
-      // If domain changed, delete the old deployement
-      await (await dockerEngine.listServices()).filter(r => r.Spec.Labels.managedBy === 'coolify' && r.Spec.Labels.type === 'application').map(async s => {
-        const running = s.Spec.Labels
-        if (running.repoId === repoId && running.branch === branch) {
-          if (running.domain !== config.publish.domain) {
-            await execShellAsync(`docker stack rm ${s.Spec.Labels['com.docker.stack.namespace']}`)
-          }
-        }
-
-      })
-      
-      await cloneRepository(
-        config,
-        appId,
-        fastify.config.GITHUB_APP_PRIVATE_KEY
-      );
-      await generateConfig(config);
-      await copyFiles(config.general.workdir);
-      await buildContainer(config, dockerEngine);
-      await deploy(config, fastify.config.DOCKER_NETWORK);
-    } catch (error) {
-      console.log("webhook error");
-      console.log(error);
-    }
+    QnB(config)
+    reply.code(201).send({ message: "Deployment queued." });
   });
 };

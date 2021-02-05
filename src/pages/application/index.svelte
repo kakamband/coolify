@@ -1,4 +1,4 @@
 <script>
     import { goto } from "@roxi/routify";
-    $goto("/application/new/start");
+    $goto("/application/new/start/configuration");
 </script>

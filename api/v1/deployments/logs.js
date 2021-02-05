@@ -1,4 +1,5 @@
-const Log = require("../../models/Log");
+const ApplicationLog = require("../../models/ApplicationLog");
+
 module.exports = async function (fastify) {
     const getLogSchema = {
         querystring: {
@@ -13,11 +14,11 @@ module.exports = async function (fastify) {
     fastify.get("/", async (request, reply) => {
         const { deployId } = request.query;
         try {
-            return await Log.find({ deployId })
+            return await ApplicationLog.find({ deployId })
                 .select("-_id -__v")
                 .sort({ createdAt: "asc" });
         } catch (e) {
-            throw new Error('No Logs found');
+            throw new Error('No logs found');
         }
 
     });

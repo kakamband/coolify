@@ -8,13 +8,13 @@
     function switchTo(application) {
         const { branch, org, repo, to } = application;
         $savedBranch = branch;
-        if (to === "deployments") {
-            $goto(`/application/:org/:repo/deployments`, {
+        if (to === "logs") {
+            $goto(`/application/:org/:repo/logs`, {
                 org,
                 repo,
             });
         } else {
-            $goto(`/application/:org/:repo`, {
+            $goto(`/application/:org/:repo/configuration`, {
                 org,
                 repo,
             });
@@ -26,7 +26,7 @@
     <div class="text-4xl font-bold tracking-tight">Applications</div>
     <a
         class="mx-2 flex items-center justify-center h-8 w-8 bg-blue-600 border border-black rounded-md text-white hover:bg-blue-500"
-        href={$url("/application/new/start")}
+        href={$url("/application/new/start/configuration")}
         ><svg
             class="w-6"
             xmlns="http://www.w3.org/2000/svg"
@@ -62,9 +62,6 @@
     >
 </div>
 {#if applications.deployed.length > 0}
-    <div class="text-base font-bold tracking-tight px-5 py-3 text-center">
-        Deployed
-    </div>
     <div class="flex flex-row flex-wrap gap-4 justify-center items-center mx-6">
         {#each applications.deployed as application}
             <div
@@ -77,8 +74,10 @@
                 <div class="font-medium text-center text-xl">
                     {application.Spec.Labels.domain}
                 </div>
+
                 <div class="text-xs text-center">
-                    {application.Spec.Labels.branch}
+                    {application.Spec.Labels.org}/{application.Spec.Labels
+                        .repo}:{application.Spec.Labels.branch}
                 </div>
                 <div class="text-xs text-center">
                     {#if application.Spec.Labels.pathPrefix != null && application.Spec.Labels.pathPrefix !== "/"}
@@ -93,6 +92,12 @@
               class="border-b-2 border-transparent hover:border-blue-500"
               >Open</a
             > -->
+                    {#if application.Spec.Labels.isPreviewDeploy == 'true'}
+                        <button
+                            class="border-b-2 font-medium border-transparent hover:border-blue-500"
+                            >Preview Deploys</button
+                        >
+                    {/if}
                     <button
                         class="border-b-2 font-medium border-transparent hover:border-blue-500"
                         on:click={() =>
@@ -103,14 +108,14 @@
                                 to: "configuration",
                             })}>Configure & Deploy</button
                     >
-                    <button
+                    <button 
                         class="border-b-2 font-medium border-transparent hover:border-blue-500 cursor-pointer"
                         on:click={() =>
                             switchTo({
                                 branch: application.Spec.Labels.branch,
                                 org: application.Spec.Labels.org,
                                 repo: application.Spec.Labels.repo,
-                                to: "deployments",
+                                to: "logs",
                             })}
                     >
                         Logs
@@ -120,7 +125,10 @@
         {/each}
     </div>
 {/if}
-{#if applications.onlyConfigured.length > 0}
+<!-- {#if applications.underDeployment.length > 0}
+{JSON.stringify(applications.underDeployment)}
+{/if} -->
+<!-- {#if applications.onlyConfigured.length > 0}
     <div class="text-base font-bold tracking-tight px-5 py-3 text-center">
         Configured
     </div>
@@ -159,4 +167,4 @@
             </div>
         {/each}
     </div>
-{/if}
+{/if} -->

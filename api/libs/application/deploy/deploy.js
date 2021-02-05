@@ -1,20 +1,23 @@
 const yaml = require("js-yaml");
-const { execShellAsync } = require("./common");
-const { saveLogs } = require("./saveLogs");
+const { execShellAsync } = require("../../common");
+const { docker } = require('../../docker')
+const { saveAppLog } = require("../../logging");
 const fs = require('fs').promises
 
-module.exports = async function (config, network) {
+module.exports = async function (config) {
   try {
     const generateEnvs = {};
     for (const secret of config.publish.secrets) {
       generateEnvs[secret.name] = secret.value;
     }
+    const containerName = config.previewDeploy ? config.general.random : config.build.container.name
+    const previewDomain = config.publish.previewDomain || config.publish.domain
     const stack = {
       version: "3.8",
       services: {
-        [config.build.container.name]: {
+        [containerName]: {
           image: `${config.build.container.name}:${config.build.container.tag}`,
-          networks: [`${network}`],
+          networks: [`${docker.network}`],
           environment: generateEnvs,
           deploy: {
             replicas: 1,
@@ -36,52 +39,46 @@ module.exports = async function (config, network) {
               "repo=" + config.repository.name.split('/')[1],
               "repoId=" + config.repository.id,
               "domain=" + config.publish.domain,
+              "isPreviewDeploy=" + config.previewDeploy,
+              "previewDomain=" + previewDomain,
               "pathPrefix=" + config.publish.pathPrefix,
               "traefik.enable=true",
               "traefik.http.services." +
-                config.build.container.name +
-                `.loadbalancer.server.port=${config.publish.port}`,
+              config.build.container.name +
+              `.loadbalancer.server.port=${config.publish.port}`,
               "traefik.http.routers." +
-                config.build.container.name +
-                ".entrypoints=websecure",
+              config.build.container.name +
+              ".entrypoints=websecure",
               "traefik.http.routers." +
-                config.build.container.name +
-                ".rule=Host(`" +
-                config.publish.domain +
-                "`) && PathPrefix(`" +
-                config.publish.pathPrefix +
-                "`)",
+              config.build.container.name +
+              ".rule=Host(`" +
+              previewDomain +
+              "`) && PathPrefix(`" +
+              config.publish.pathPrefix +
+              "`)",
               "traefik.http.routers." +
-                config.build.container.name +
-                ".tls.certresolver=letsencrypt",
+              config.build.container.name +
+              ".tls.certresolver=letsencrypt",
               "traefik.http.routers." +
-                config.build.container.name +
-                ".middlewares=global-compress",
+              config.build.container.name +
+              ".middlewares=global-compress",
             ],
           },
         },
       },
       networks: {
-        [`${network}`]: {
+        [`${docker.network}`]: {
           external: true,
         },
       },
     };
     await fs.writeFile(`${config.general.workdir}/stack.yml`, yaml.dump(stack))
     await execShellAsync(
-      `cat ${config.general.workdir}/stack.yml |docker stack deploy --prune -c - ${config.build.container.name}`
+      `cat ${config.general.workdir}/stack.yml |docker stack deploy --prune -c - ${containerName}`
     );
-    await saveLogs(
-      [
-        { stream: "Published!" }
-      ],
-      config
-    );
+    await saveAppLog("Published!", config);
   } catch (error) {
-    await saveLogs(
-      [{ stream: "Error occured during deployment." }, {stream: error.message}],
-      config
-    );
+    await saveAppLog(`Error occured during deployment: ${error.message}`, config)
     throw new Error(error);
   }
 };

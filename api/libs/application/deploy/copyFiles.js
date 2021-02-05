@@ -1,5 +1,6 @@
 const fs = require("fs").promises;
-module.exports = async function (workdir) {
+module.exports = async function (config) {
+  const { workdir } = config.general
   try {
     // TODO: Do it better.
     await fs.writeFile(`${workdir}/.dockerignore`, "node_modules");

@@ -26,7 +26,7 @@
     {#await loadDeployments() then notUsed}
         <div class="flex justify-center items-end">
             <div class="text-4xl font-bold tracking-tight pt-6 px-2 text-center">
-                Deployment logs
+                Logs
             </div>
             <button
                 class="flex items-center justify-center h-8 w-8 bg-green-600 border border-black rounded-md text-white hover:bg-green-500"

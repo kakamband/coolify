@@ -1,15 +1,15 @@
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-const { execShellAsync } = require("./common");
+const { execShellAsync } = require("../../common");
 
-module.exports = async function (config, appId, privateKey) {
+module.exports = async function (config) {
   const { workdir } = config.general;
   const { name, branch, installationId } = config.repository;
-  const githubPrivateKey = privateKey.replace(/\\n/g, "\n").replace(/\"/g, "");
+  const githubPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, "\n").replace(/\"/g, "");
   const payload = {
     iat: Math.round(new Date().getTime() / 1000),
     exp: Math.round(new Date().getTime() / 1000 + 60),
-    iss: parseInt(appId),
+    iss: parseInt(config.general.githubAppId),
   };
 
   try {

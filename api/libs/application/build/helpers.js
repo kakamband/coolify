@@ -1,8 +1,8 @@
 const fs = require("fs").promises;
-const { checkImageAvailable } = require("./common");
-const { streamDocker } = require("./streamDocker");
+const { checkImageAvailable } = require("../../common");
+const { streamEvents, docker } = require("../../docker");
 
-async function buildImage(config, engine) {
+async function buildImage(config) {
     dockerFile = `
                 # build
                 FROM node:lts
@@ -17,13 +17,11 @@ async function buildImage(config, engine) {
             RUN ${config.build.buildCmd}`;
 
     await fs.writeFile(`${config.general.workdir}/Dockerfile`, dockerFile);
-
-    const stream = await engine.buildImage(
+    const stream = await docker.engine.buildImage(
         { src: ["."], context: config.general.workdir },
         { t: `${config.build.container.name}:${config.build.container.tag}` }
     );
-    await streamDocker(engine, stream, config);
-
+    await streamEvents(stream, config);
 }
 
 module.exports = {

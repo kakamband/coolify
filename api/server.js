@@ -1,4 +1,5 @@
 require('dotenv').config()
+const {saveServerLog} = require('./libs/logging')
 const fastify = require("fastify")({
   logger: true
 });
@@ -25,6 +26,14 @@ if (process.env.NODE_ENV === "production") {
 }
 
 fastify.register(require("./app"), { prefix: "/api/v1" });
+fastify.setErrorHandler(async (error, request, reply) => {
+  if (error.statusCode) {
+    reply.status(error.statusCode).send({message: error.message} || {message: "Something is NOT okay. Are you okay?"})
+  } else {
+    reply.status(500).send({message: error.message} || {message: "Something is NOT okay. Are you okay?"})
+  }
+  await saveServerLog(error)
+})
 mongoose.connect(
   `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DB}?authSource=${process.env.MONGODB_DB}&readPreference=primary&ssl=false`,
   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
